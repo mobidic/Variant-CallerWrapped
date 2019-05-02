@@ -14,35 +14,16 @@ import octopus
 from octopus import *
 
 
-#################################wrapper####################################
+#################################wrapper ####################################
 
 
 
-def process(args):
-	variantcaller = args.variantcaller
-	genomeref = args.genomeref
-	bam = args.bam
-	output = args.vcf
-
-	print("{} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
-
-
-"""def command(args, log):
-	variantcaller = args.variantcaller
-	genomeref= args.genomeref
-	bam = args.bam
-	output=args.vcf
-
-	log.info("Execute command : {} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
-	cmd = os.system("{} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
-
- 	return 0
-"""
 def Error(args, log):
 	variantcaller = args.variantcaller
 	genomeref= args.genomeref
 	bam = args.bam
 	output=args.vcf
+
  	
 	if not variantcaller or not genomeref or not bam or not output:
 		log.error("necessary pre-requisite arguments")
@@ -54,7 +35,7 @@ def Error(args, log):
 		if not os.path.isfile(genomeref): 
  		#	print(genomeref, "exists")
  		#else:
- 			log.error(genomeref, "does not exists")
+ 			print(genomeref, "does not exists")
 	   
  	if bam:
  		if not os.path.isfile(bam): 
@@ -72,7 +53,7 @@ def Error(args, log):
 def Warning(args, log):
  	bed = args.bed
  	thread = args.thread
- 	if not bed or not thread:
+ 	if not bed or not thread or not e or not z or not F or not P:
  		log.warning("missing arguments are not necessary")
  		log.debug("module arguments must be declared")  ######emplacement pas trop logique.
 	
@@ -127,15 +108,23 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser(description = "wrapper for variant caller")
 	
-	parser.add_argument('-p', '--variantcaller', help= 'the path to the variantcaller installation folder')
+	parser.add_argument('-va', '--variantcaller', help= 'the path to the variantcaller installation folder')
 	parser.add_argument('-f', '--genomeref', default = '/usr/local/share/refData/genome/hg19/hg19.fa', help= 'reference genome.fasta')
 	parser.add_argument('-b', '--bam', default = '/RS_IURC/data/MobiDL/tests/HC/MiniFastqTest.bam', help= 'bam file')
 	parser.add_argument('-v', '--vcf',  help= 'the output vcf file')
-	parser.add_argument('-q', '--prefix', help = 'output prefix')
+	parser.add_argument('-p', '--prefix', help = 'output prefix')
+	parser.add_argument('-s', '--sample', default= 'sample.vcf', help ='Sample name to use in the output VCF file')
 
 
-	parser.add_argument('-s', '--bed', help= ' bed file containing target regions')
+	parser.add_argument('-be', '--bed', default = '/usr/local/share/refData/intervals/MedExome_2019.bed ',help= ' bed file containing target regions')
 	parser.add_argument('-t', '--thread', help = 'number of threads used', type = int)
+
+	
+	parser.add_argument('-z', help = 'anonyme')
+	parser.add_argument('-F',  help= 'Enable SNP filter for single-strandedness')
+	parser.add_argument('-P', help = 'Read alignment file and process records in separate threads', type = int)
+
+
 
 	parser.add_argument('-l', '--logging-level', default="DEBUG", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], action=LoggerAction, help='The logger level. [Default: %(default)s]')
 
@@ -152,7 +141,7 @@ if __name__ == "__main__":
 		print(args.variantcaller)
 	"""
 
-	process(args)
+	
 
 	logging.basicConfig(format='%(asctime)s - %(name)s [%(levelname)s] %(message)s')
 	log = logging.getLogger("Wrapper_freebayes")
@@ -167,9 +156,12 @@ if __name__ == "__main__":
 	#command(args, log)
 	Error(args, log)
 	Warning(args, log)
-	#wich(args.variantcaller)
+	wich(args.variantcaller)
 	#freebayes.freeprocess(args)
 	#xatlas.xatlasprocess(args)
 	#octopus.octoprocess(args)
-	octopus.octocommand(args,log)
+	#octopus.octocommand(args,log)
+	freebayes.freecommand(args, log)
+	#xatlas.xatlascommand(args, log)
+
 
