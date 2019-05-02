@@ -16,9 +16,10 @@ def freeprocess(args):
 	bam = args.bam
 	output = args.vcf
 
-	print("{} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
-	#log.info("print command : {} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
+	#log.info("print command : {} -f {} {} -v {}".format(variantcaller, genomeref, bam, output)) #pourquoi ça ne marche pas?
 
+	print("{} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))  
+	
 
 def freecommand(args, log):
 	variantcaller = args.variantcaller
@@ -27,16 +28,12 @@ def freecommand(args, log):
 	output = args.vcf
 	
 	log.info("Execute command : {} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
-	os.system("{} -f {} {} -v {}".format(variantcaller, genomeref, bam, output))
+	os.system("{} -f {} {} -vc {}".format(variantcaller, genomeref, bam, output))
 
 	return 0
 
  	
-
-
-
-
-################################################################################
+ 	###############################################################################
 #
 # CLASS
 #
@@ -69,7 +66,7 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser(description = "wrapper for variant caller")
 	
-	parser.add_argument('-p', '--variantcaller', default = "/usr/local/bin/freebayes", help= 'the path to the freebayes installation folder')
+	parser.add_argument('-va', '--variantcaller', default = "/usr/local/bin/freebayes", help= 'the path to the freebayes installation folder')
 	parser.add_argument('-f', '--genomeref', default = '/usr/local/share/refData/genome/hg19/hg19.fa', help= 'reference genome.fasta')
 	parser.add_argument('-b', '--bam', default='/RS_IURC/data/MobiDL/tests/HC/MiniFastqTest.bam',  help= 'bam file')
 	parser.add_argument('-v', '--vcf',  help= 'the output vcf file')
@@ -81,12 +78,12 @@ if __name__ == "__main__":
 
 	args = parser.parse_args()
 
-	"""if args.thread:
+	if args.thread:
 		print(args.thread * 2)
 
 	if args.variantcaller:
 		print(args.variantcaller)
-	"""
+	
 
 
 	#freeprocess(args)
@@ -112,38 +109,3 @@ if __name__ == "__main__":
         
 
 
-
-
-
-
-
-
-
-
-	
-
-	
-		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-"""if __name__ == "__main__":
-    # Manage parameters
-    parser = argparse.ArgumentParser(description="Annotate VCF with Mobidic Prioritization Algorithm score (MPA).")
-    parser.add_argument('-p', '--path', default="/usr/local/bin/freebayes", help='The path to the freebayes installation folder. [Default: %(default)s]')
-    parser.add_argument('-b', '--bam', help='The path to the MPA installation folder. [Default: %(default)s]')
-    parser.add_argument('-f', '--fasta')
-
-    # Process
-    process(args)"""
