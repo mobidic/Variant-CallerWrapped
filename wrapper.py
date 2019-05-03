@@ -22,7 +22,7 @@ def checkArguments(args, log):
 
 	"""@summary = returns a log.error when you do not use the parameters listed"""
 
-	variantcaller = args.variantcaller
+	variantcaller = args.variant_caller
 	genomeref= args.genomeref
 	bam = args.bam
 	output=args.vcf
@@ -30,6 +30,7 @@ def checkArguments(args, log):
  	
 	if not variantcaller or not genomeref or not bam or not output:
 		log.error("necessary pre-requisite arguments")
+		sys.exit()
 	
 	if genomeref:
 		if not os.path.isfile(genomeref): 
@@ -76,28 +77,27 @@ def wichPath(variantcaller):
         eval_path = os.path.join(current_folder, variantcaller)
         if os.path.exists(eval_path):
             caller_path = eval_path
-            
 	return caller_path	
 
 
 
-def desiredVariantCaller():
+def desiredVariantCaller(args, log, exePath):
 
 	"""@summary = allows to run the command for each variantcaller"""
 	
-	if args.variantcaller == 'freebayes':
-		freebayes.freecommand(args, log)
+	if args.variant_caller == 'freebayes':
+		freebayes.freecommand(args, log, exePath)
 	
 		
-	elif args.variantcaller == 'xatlas':
-		xatlas.xatlascommand(args, log)
+	elif args.variant_caller == 'xatlas':
+		xatlas.xatlascommand(args, log, exePath)
 
-	elif args.variantcaller == 'octopus': #or args.variantcaller == os.path.isfile(args.variantcaller):
-		octopus.octocommand(args,log)
+	elif args.variant_caller == 'octopus': #or args.variantcaller == os.path.isfile(args.variantcaller):
+		octopus.octocommand(args,log, exePath)
 
 	else:
-		print("could not found the variantcaller")
-
+		log.error("could not found the variantcaller")
+		sys.exit()
 
 ################################################################################
 #
@@ -125,14 +125,13 @@ class LoggerAction(argparse.Action):
 
 
 
-
 if __name__ == "__main__":
 	#manage parametters
 
 	parser = argparse.ArgumentParser(description = "wrapper for variant caller")
 	
-	parser.add_argument('-va', '--variantcaller', help= 'the path to the variantcaller installation folder')
-	parser.add_argument('--va-path', help='the required option when you do not find the path of variantcaller')
+	parser.add_argument('-vc', '--variant-caller', help= 'the path to the variantcaller installation folder')
+	parser.add_argument('--vc-path', help='the required option when you do not find the path of variantcaller')
 	parser.add_argument('-g', '--genomeref', default = '/usr/local/share/refData/genome/hg19/hg19.fa', help= 'reference genome.fasta')
 	parser.add_argument('-b', '--bam', help= 'bam file')
 	parser.add_argument('-v', '--vcf',  help= 'the output vcf file')
@@ -166,29 +165,31 @@ if __name__ == "__main__":
 
 
 	"""
-	chemin = wichPath(args.variantcaller)
-	if not chemin:
-            	print("could not find path for you variant caller use --va -path option to specify the correct path")
 		
 
 	logging.basicConfig(format='%(asctime)s - %(name)s [%(levelname)s] %(message)s')
 	log = logging.getLogger("Wrapper")
 	log.setLevel(args.logging_level)
-	log.info("Start Wrapper")
+	log.info("Wrapper started")
 	log.info("Command: " + " ".join(sys.argv))
-	log.debug("DEBUG level message")
-	log.info("INFO level message")
-	log.warning("WARNING level message")
-	log.error("ERROR level message")
-	
-
-
+	#log.debug("DEBUG level message")
+	#log.info("INFO level message")
+	#log.warning("WARNING level message")
+	#log.error("ERROR level message")
 	
 	checkArguments(args, log)
 	Warning(args, log)
-	wichPath(args.variantcaller)
+	ExePath = wichPath(args.variant_caller)
+	if ExePath is None:
+		if args.vc_path:
+			ExePath = args.vc_path
+		else: 
+			log.error("could not find path for you variant caller use --va -path option to specify the correct path")
+			sys.exit()
 	
-	desiredVariantCaller()
+	#wichPath(args.variantcaller)
+	
+	desiredVariantCaller(args, log, ExePath)
 
 
 
