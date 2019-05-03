@@ -38,10 +38,8 @@ def xatlascommand(args, log):
 # CLASS
 #
 ################################################################################
-class LoggerAction(argparse.Action):
-    """
+"""class LoggerAction(argparse.Action):
     @summary: Manages logger level parameters (The value "INFO" becomes logging.info and so on).
-    """
     def __call__(self, parser, namespace, values, option_string=None):
         log_level = None
         if values == "DEBUG":
@@ -80,13 +78,11 @@ if __name__ == "__main__":
 
 
 	args = parser.parse_args()
-	"""
 	if args.thread:
 		print(args.thread * 2)
 
 	if args.variantcaller:
 		print(args.variantcaller)
-	"""
 
 	logging.basicConfig(format='%(asctime)s - %(name)s [%(levelname)s] %(message)s')
 	log = logging.getLogger("Wrapper_freebayes")
@@ -108,7 +104,7 @@ if __name__ == "__main__":
 	#xatlascommand(args, log)
 
 
-
+"""
 
 
 	
