@@ -14,11 +14,14 @@ import octopus
 from octopus import *
 
 
-#################################wrapper ####################################
+################################# wrapper ####################################
 
 
 
-def Error(args, log):
+def checkArguments(args, log):
+
+	"""@summary = returns a log.error when you do not use the parameters listed"""
+
 	variantcaller = args.variantcaller
 	genomeref= args.genomeref
 	bam = args.bam
@@ -27,41 +30,41 @@ def Error(args, log):
  	
 	if not variantcaller or not genomeref or not bam or not output:
 		log.error("necessary pre-requisite arguments")
-	#	print("pre-requisite arguments are good") #je voulais mettre là continuous,mais hors boucle
-	#else:
-	#	log.error("necessary pre-requisite arguments")
-
+	
 	if genomeref:
 		if not os.path.isfile(genomeref): 
- 		#	print(genomeref, "exists")
- 		#else:
- 			print(genomeref, "does not exists")
+ 		
+ 			log.error(genomeref, "does not exists")
 	   
  	if bam:
  		if not os.path.isfile(bam): 
- 			#print(bam, "exists")
- 		#else:
+ 		
  			print(bam, "does not exists")
 
- 	if variantcaller:
+ 	"""if variantcaller:
  		if not os.path.isfile(variantcaller):
  			#print(variant-caller, "exists")
  		#else:
  			print(variantcaller,"does not exists")
-
+	"""
 
 def Warning(args, log):
+
+	"""@summary = returns a log.warning when you do not use the parameters listed"""
+
  	bed = args.bed
  	thread = args.thread
- 	if not bed or not thread or not e or not z or not F or not P:
- 		log.warning("missing arguments are not necessary")
- 		log.debug("module arguments must be declared")  ######emplacement pas trop logique.
+ 	F= args.F
+ 	P = args.P
+ 	z = args.z
+
+ 	if not bed or not thread or not z or not F or not P:
+ 		log.warning("missing arguments but its not necessary")
+ 		
+
 	
 
-
-	
-
-def wich(variantcaller):
+def wichPath(variantcaller):
     
     """@summary: Returns the path to the software from the PATH environment variable.
     @param software: [str] Name of the software.
@@ -73,7 +76,28 @@ def wich(variantcaller):
         eval_path = os.path.join(current_folder, variantcaller)
         if os.path.exists(eval_path):
             caller_path = eval_path
+            
 	return caller_path	
+
+
+
+def desiredVariantCaller():
+
+	"""@summary = allows to run the command for each variantcaller"""
+	
+	if args.variantcaller == 'freebayes':
+		freebayes.freecommand(args, log)
+	
+		
+	elif args.variantcaller == 'xatlas':
+		xatlas.xatlascommand(args, log)
+
+	elif args.variantcaller == 'octopus': #or args.variantcaller == os.path.isfile(args.variantcaller):
+		octopus.octocommand(args,log)
+
+	else:
+		print("could not found the variantcaller")
+
 
 ################################################################################
 #
@@ -94,8 +118,7 @@ class LoggerAction(argparse.Action):
             log_level = logging.WARNING
         elif values == "ERROR":
             log_level = logging.ERROR
-        elif values == "CRITICAL":
-            log_level = logging.CRITICAL
+        
         setattr(namespace, self.dest, log_level)
 
 
@@ -109,11 +132,12 @@ if __name__ == "__main__":
 	parser = argparse.ArgumentParser(description = "wrapper for variant caller")
 	
 	parser.add_argument('-va', '--variantcaller', help= 'the path to the variantcaller installation folder')
-	parser.add_argument('-f', '--genomeref', default = '/usr/local/share/refData/genome/hg19/hg19.fa', help= 'reference genome.fasta')
-	parser.add_argument('-b', '--bam', default = '/RS_IURC/data/MobiDL/tests/HC/MiniFastqTest.bam', help= 'bam file')
+	parser.add_argument('--va-path', help='the required option when you do not find the path of variantcaller')
+	parser.add_argument('-g', '--genomeref', default = '/usr/local/share/refData/genome/hg19/hg19.fa', help= 'reference genome.fasta')
+	parser.add_argument('-b', '--bam', help= 'bam file')
 	parser.add_argument('-v', '--vcf',  help= 'the output vcf file')
 	parser.add_argument('-p', '--prefix', help = 'output prefix')
-	parser.add_argument('-s', '--sample', default= 'sample.vcf', help ='Sample name to use in the output VCF file')
+	parser.add_argument('-s', '--sample', help ='Sample name to use in the output VCF file')
 
 
 	parser.add_argument('-be', '--bed', default = '/usr/local/share/refData/intervals/MedExome_2019.bed ',help= ' bed file containing target regions')
@@ -126,7 +150,7 @@ if __name__ == "__main__":
 
 
 
-	parser.add_argument('-l', '--logging-level', default="DEBUG", choices=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"], action=LoggerAction, help='The logger level. [Default: %(default)s]')
+	parser.add_argument('-l', '--logging-level', default="DEBUG", choices=["DEBUG", "INFO", "WARNING", "ERROR"], action=LoggerAction, help='The logger level. [Default: %(default)s]')
 
 
 	args = parser.parse_args()
@@ -139,29 +163,38 @@ if __name__ == "__main__":
 
 	if args.variantcaller:
 		print(args.variantcaller)
-	"""
 
-	
+
+	"""
+	chemin = wichPath(args.variantcaller)
+	if not chemin:
+            	print("could not find path for you variant caller use --va -path option to specify the correct path")
+		
 
 	logging.basicConfig(format='%(asctime)s - %(name)s [%(levelname)s] %(message)s')
-	log = logging.getLogger("Wrapper_freebayes")
+	log = logging.getLogger("Wrapper")
 	log.setLevel(args.logging_level)
-	log.info("Start Wrapper for freebayes")
+	log.info("Start Wrapper")
 	log.info("Command: " + " ".join(sys.argv))
 	log.debug("DEBUG level message")
 	log.info("INFO level message")
 	log.warning("WARNING level message")
 	log.error("ERROR level message")
-	log.critical("CRITICAL level message")
-	#command(args, log)
-	Error(args, log)
-	Warning(args, log)
-	wich(args.variantcaller)
-	#freebayes.freeprocess(args)
-	#xatlas.xatlasprocess(args)
-	#octopus.octoprocess(args)
-	#octopus.octocommand(args,log)
-	freebayes.freecommand(args, log)
-	#xatlas.xatlascommand(args, log)
+	
 
+
+	
+	checkArguments(args, log)
+	Warning(args, log)
+	wichPath(args.variantcaller)
+	
+	desiredVariantCaller()
+
+
+
+
+	
+	
+	
+	
 
