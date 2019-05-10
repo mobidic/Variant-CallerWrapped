@@ -10,21 +10,24 @@ import sys
 
 #################################wrapper for freebayes####################################
 
-def freecommand(args, log):
+def freecommand(args, log, exePath):
 
-	variantcaller = args.variantcaller
-	genomeref = args.genomeref
-	bam = args.bam
 
-	bed = args.bed
-	output = args.prefix
+	slurmVar = ''
+	if args.slurm == True:
+		slurmVar = "srun -N {} -c {}".format(args.node, args.core, args.thread) 
+		#slurmVar = 'srun -N' + args.node +' -c' + args.thread
+
+
 	
-	log.info("Execute command : {} -f {} -t {} {} -v {}".format(variantcaller, genomeref, bed, bam, output))
-	os.system("{} -f {} -t {} {} -v {}".format(variantcaller, genomeref, bed ,bam, output))
+	log.info("Execute command : {} {} -f {} -t {} {} -v {}".format(slurmVar, exePath, args.genome_ref, args.bed, args.bam, args.vcf))
+	os.system("{} {} -f {} -t {} {} -v {}".format(slurmVar,exePath, args.genome_ref, args.bed ,args.bam, args.vcf))
+	
+
 
 	return 0
 
 
-	###path =/usr/local/bin/freebayes
+	
 
  

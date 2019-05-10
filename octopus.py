@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import argparse
 import os
 import re
@@ -6,20 +9,28 @@ import re
 #################################wrapper for octopus####################################
 
 
-def octocommand(args,log):
-	variantcaller = args.variantcaller
-	genomeref = args.genomeref
-	bam = args.bam
+def octocommand(args, log, exePath):
+	slurmVar = ''
+	if args.slurm == True:
+		slurmVar = "srun -N {} -c {}".format(args.node, args.core, args.thread) 
+		#slurmVar = 'srun -N' + args.node +' -c' + args.thread
 
-	bed = args.bed
+
 	
- 	log.info("Execute command : {} -R {} - I {} -t {} ".format(variantcaller, genomeref, bam, bed))
-	os.system("{} -R {} -I {} -t {} ".format(variantcaller, genomeref, bam, bed))
-	#print(cmd)
 
+	log.info("Execute command : {} {} -R {} - I {} -t {} > {}".format(slurmVar, exePath, args.genome_ref, args.bam, args.bed,args.vcf))
+	os.system("{} {} -R {} -I {} -t {}  > {}".format(slurmVar, exePath, args.genome_ref, args.bam, args.bed, args.vcf))
+
+	
+
+
+
+
+
+	
+ 	
+	
  	return 0
 
- 	### path = /softs/octopus/bin/octopus
-
-
+ 	
 	

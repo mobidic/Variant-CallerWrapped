@@ -22,62 +22,69 @@ def checkArguments(args, log):
 
 	"""@summary = returns a log.error when you do not use the parameters listed"""
 
-	variantcaller = args.variant_caller
-	genomeref= args.genomeref
-	bam = args.bam
-	output=args.vcf
+	
 
  	
-	if not variantcaller or not genomeref or not bam or not output:
+	if not args.variant_caller or not args.genome_ref or not args.bam  or not args.bed or not args.vcf:
 		log.error("necessary pre-requisite arguments")
 		sys.exit()
+
 	
-	if genomeref:
-		if not os.path.isfile(genomeref): 
+	if args.genome_ref:
+		if not os.path.isfile(args.genome_ref): 
  		
- 			log.error(genomeref, "does not exists")
+ 			log.error("it does not exist file corresponding to the reference genome")
+ 			sys.exit()
+
+ 		if not os.access(args.genome_ref, os.R_OK):
+ 			log.error("permission to read the reference genome file is not accorded")
+ 			sys.exit()
+
 	   
- 	if bam:
- 		if not os.path.isfile(bam): 
+ 	if args.bam:
+ 		if not os.path.isfile(args.bam): 
  		
- 			print(bam, "does not exists")
+ 			log.error("it does not exist file corresponding to the bam")
 
- 	"""if variantcaller:
- 		if not os.path.isfile(variantcaller):
- 			#print(variant-caller, "exists")
- 		#else:
- 			print(variantcaller,"does not exists")
-	"""
+ 			sys.exit()
 
-def Warning(args, log):
+ 		if not os.access(args.bam, os.R_OK):
+ 			log.error("permission to read the bam file is not accorded")
+ 			sys.exit()
 
-	"""@summary = returns a log.warning when you do not use the parameters listed"""
 
- 	bed = args.bed
- 	thread = args.thread
- 	F= args.F
- 	P = args.P
- 	z = args.z
+ 	if args.bed:
+ 		if not os.path.isfile(args.bed):
+ 			log.error("it does not exist file corresponding to the target regions")
+ 			sys.exit()
 
- 	if not bed or not thread or not z or not F or not P:
- 		log.warning("missing arguments but its not necessary")
- 		
+ 		if not os.access(args.bed, os.R_OK):
+ 			log.error("permission to read the target regions file is not accorded")
+ 			sys.exit()
 
 	
 
-def wichPath(variantcaller):
+def wichPath(variant_caller):
     
     """@summary: Returns the path to the software from the PATH environment variable.
     @param software: [str] Name of the software.
     @return: [str/None] The path of the software or None if it is not found."""
     
-    caller_path = None
+    callerPath = None
     PATH = os.environ.get('PATH')
-    for current_folder in reversed(PATH.split(os.pathsep)):  # Reverse PATh elements to kept only the first valid folder
-        eval_path = os.path.join(current_folder, variantcaller)
-        if os.path.exists(eval_path):
-            caller_path = eval_path
-	return caller_path	
+    #print(os.pathsep)
+    #for current_folder in reversed(PATH.split(os.pathsep)):  # Reverse PATh elements to kept only the first valid folder
+    for currentFolder in PATH.split(os.pathsep):
+        print(currentFolder)
+        evalPath = os.path.join(currentFolder, variant_caller)
+        #print(eval_path)
+        if os.path.exists(evalPath):
+            callerPath = evalPath
+        
+ 	
+	return callerPath	
+
+
 
 
 
@@ -92,7 +99,7 @@ def desiredVariantCaller(args, log, exePath):
 	elif args.variant_caller == 'xatlas':
 		xatlas.xatlascommand(args, log, exePath)
 
-	elif args.variant_caller == 'octopus': #or args.variantcaller == os.path.isfile(args.variantcaller):
+	elif args.variant_caller == 'octopus': 
 		octopus.octocommand(args,log, exePath)
 
 	else:
@@ -130,22 +137,30 @@ if __name__ == "__main__":
 
 	parser = argparse.ArgumentParser(description = "wrapper for variant caller")
 	
-	parser.add_argument('-vc', '--variant-caller', help= 'the path to the variantcaller installation folder')
-	parser.add_argument('--vc-path', help='the required option when you do not find the path of variantcaller')
-	parser.add_argument('-g', '--genomeref', default = '/usr/local/share/refData/genome/hg19/hg19.fa', help= 'reference genome.fasta')
+	parser.add_argument('-vc', '--variant_caller', help= 'the path to the variantcaller installation folder')
+	parser.add_argument('--vc_path', help='the required option when you do not find the path of variantcaller')
+	parser.add_argument('-g', '--genome_ref', help= 'reference genome.fasta')
 	parser.add_argument('-b', '--bam', help= 'bam file')
 	parser.add_argument('-v', '--vcf',  help= 'the output vcf file')
-	parser.add_argument('-p', '--prefix', help = 'output prefix')
+	#parser.add_argument('-p', '--prefix', help = 'output prefix')
 	parser.add_argument('-s', '--sample', help ='Sample name to use in the output VCF file')
+	
+
+	parser.add_argument('--slurm', action='store_true')
+
+	parser.add_argument('-N', '--node', help = 'number of nodes', default = 1, type = int)
+	parser.add_argument('-c', '--core', help = 'number of cores', default = 1, type = int)
+	parser.add_argument('-t', '--thread', default = 1, help = 'number of threads used', type = int)
+
 
 
 	parser.add_argument('-be', '--bed', default = '/usr/local/share/refData/intervals/MedExome_2019.bed ',help= ' bed file containing target regions')
-	parser.add_argument('-t', '--thread', help = 'number of threads used', type = int)
+	
 
 	
-	parser.add_argument('-z', help = 'anonyme')
-	parser.add_argument('-F',  help= 'Enable SNP filter for single-strandedness')
-	parser.add_argument('-P', help = 'Read alignment file and process records in separate threads', type = int)
+	# parser.add_argument('-z', help = 'anonyme')
+	# parser.add_argument('-F',  help= 'Enable SNP filter for single-strandedness')
+	# parser.add_argument('-P', help = 'Read alignment file and process records in separate threads', type = int)
 
 
 
@@ -179,23 +194,50 @@ if __name__ == "__main__":
 	
 	checkArguments(args, log)
 	Warning(args, log)
-	ExePath = wichPath(args.variant_caller)
-	if ExePath is None:
+
+	wichPath(args.variant_caller)
+
+	
+	
+	log.debug(args.variant_caller)
+	#print wichPath(args.variant_caller)
+	exePath = None
+
+	if not args.vc_path:
+
+		exePath = wichPath(args.variant_caller)
+		#print exePath
+		
+		
+	if exePath is None:
 		if args.vc_path:
-			ExePath = args.vc_path
+			
+			exePath = args.vc_path
+			if not os.path.isfile(exePath):
+				log.error(" the file corresponding to your variantcaller does not exists")
+				sys.exit()
+			if not os.access(exePath, os.X_OK):
+				log.error("permission to run the variantcaller is not accorded")
+				sys.exit()
+	
 		else: 
-			log.error("could not find path for you variant caller use --va -path option to specify the correct path")
+			log.error("Could not find path for you variant caller use --vc-path option to specify the correct path")
 			sys.exit()
 	
-	#wichPath(args.variantcaller)
 	
-	desiredVariantCaller(args, log, ExePath)
+
+	
+
+	log.debug(exePath)
+
+
+	desiredVariantCaller(args, log, exePath)
+	
+	
+	
+	
+	
 
 
 
-
-	
-	
-	
-	
 

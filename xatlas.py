@@ -11,18 +11,23 @@ import re
 
 
 
-def xatlascommand(args, log):
-	variantcaller= args.variantcaller
-	genomeref = args.genomeref
-	bam = args.bam
+def xatlascommand(args, log, exePath):
 
-	bed = args.bed
-	sample = args.sample
-	output = args.prefix
+	slurmVar = ''
+	if args.slurm == True:
+		slurmVar = "srun -N {} -c {}".format(args.node, args.core, args.thread) 
 
-	log.info("Execute command : {} -r {} -i {}  -c {} -s {} -p".format(variantcaller, genomeref, bam, bed, sample,output))
- 	os.system("{} -r {}  -i {}  -c {} -s {} -p {}".format(variantcaller, genomeref, bam, bed, sample, output))
- 	log.debug("the -s argument is required")
+	
+	log.info("Execute command :{} {} -r {} -i {}  -c {} -t {} -s {} -p {}".format(slurmVar , exePath, args.genome_ref, args.bam, args.bed, args.thread, args.sample, args.vcf))
+	os.system(" {} {} -r {}  -i {}  -c {} -t {} -s {} -p {}".format(slurmVar, exePath, args.genome_ref, args.bam, args.bed, args.thread, args.sample, args.vcf))
+	log.debug(" sample argument is required")
+
+
+
+
+
+	
+	
 
  	
 
