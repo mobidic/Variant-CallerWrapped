@@ -29,7 +29,7 @@ Run the desired variant caller and takes as argument the BAM / CRAM, the referen
 
   -l {DEBUG,INFO,WARNING,ERROR}, --logging-level {DEBUG,INFO,WARNING,ERROR} | help: The logger level. [Default: DEBUG]
 
-#status
+# status
 Development in progress -
 
 
