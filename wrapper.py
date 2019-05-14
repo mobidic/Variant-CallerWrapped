@@ -139,8 +139,8 @@ if __name__ == "__main__":
 	
 	parser.add_argument('-vc', '--variant_caller', help= 'the path to the variantcaller installation folder')
 	parser.add_argument('--vc_path', help='the required option when you do not find the path of variantcaller')
-	parser.add_argument('-g', '--genome_ref', help= 'reference genome.fasta')
-	parser.add_argument('-b', '--bam', help= 'bam file')
+	parser.add_argument('-g', '--genome_ref', help= 'the reference genome file')
+	parser.add_argument('-b', '--bam', help= 'the bam file')
 	parser.add_argument('-v', '--vcf',  help= 'the output vcf file')
 	#parser.add_argument('-p', '--prefix', help = 'output prefix')
 	parser.add_argument('-s', '--sample', help ='Sample name to use in the output VCF file')
@@ -148,13 +148,13 @@ if __name__ == "__main__":
 
 	parser.add_argument('--slurm', action='store_true')
 
-	parser.add_argument('-N', '--node', help = 'number of nodes', default = 1, type = int)
-	parser.add_argument('-c', '--core', help = 'number of cores', default = 1, type = int)
-	parser.add_argument('-t', '--thread', default = 1, help = 'number of threads used', type = int)
+	parser.add_argument('-N', '--node', help = 'the number of nodes used', default = 1, type = int)
+	parser.add_argument('-c', '--core', help = 'the number of cores used', default = 1, type = int)
+	parser.add_argument('-t', '--thread', default = 1, help = 'the number of threads used', type = int)
 
 
 
-	parser.add_argument('-be', '--bed', default = '/usr/local/share/refData/intervals/MedExome_2019.bed ',help= ' bed file containing target regions')
+	parser.add_argument('-be', '--bed', default = '/usr/local/share/refData/intervals/MedExome_2019.bed ',help= ' the bed file containing target regions')
 	
 
 	
