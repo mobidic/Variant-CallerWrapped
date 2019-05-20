@@ -146,7 +146,7 @@ if __name__ == "__main__":
 	parser.add_argument('-s', '--sample', help ='Sample name to use in the output VCF file')
 	
 
-	parser.add_argument('--slurm', help = 'Required option when you want to run multiple jobs' action='store_true')
+	parser.add_argument('--slurm', help = 'Required option when you want to run multiple jobs', action='store_true')
 
 	parser.add_argument('-N', '--node', help = 'the number of nodes used', default = 1, type = int)
 	parser.add_argument('-c', '--core', help = 'the number of cores used', default = 1, type = int)
