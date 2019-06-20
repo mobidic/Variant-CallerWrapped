@@ -1,6 +1,13 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
+###########################################################
+#
+# By BARRY Nene Djenaba - nene-djenaba.barry@etu.umontpellier.fr
+#           Version 1.0.0
+# ---------------------------------------------------------
+
+
 import argparse
 import os
 import re
